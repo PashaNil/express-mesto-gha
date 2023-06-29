@@ -20,6 +20,10 @@ const getUserById = (req, res) => {
       return res.status(200).send(user);
     })
     .catch((err) => {
+      if(err.kind === "ObjectId"){
+        return res.status(400).send({'message': `Переданы некорректные данные: ${userId}`})
+      }
+      console.log(err)
       return res.status(500).send({'message': 'Сервер не отвечает'})
     });
 };
@@ -44,13 +48,12 @@ const updateProfile = (req, res) => {
   if (name || about) {
     return UserModel.findByIdAndUpdate(req.user._id, { name, about }, { returnDocument: 'after' })
       .then((user) => {
-        if (user) {
+        if (!user) {
           return res.status(404).send({'message': `Пользователь с указанным ${req.user._id} не найден`})
         }
         return res.status(200).send(user)
       })
       .catch((err) => {
-        console.log(err)
         return res.status(500).send({'message': 'Сервер не отвечает'})
       })
   }
