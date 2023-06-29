@@ -3,7 +3,7 @@ const CardModel = require('../models/card');
 const getCards = (req, res) => {
   return CardModel.find({})
     .then((cards) => {
-      return res.status(302).send(cards)
+      return res.status(200).send(cards)
     })
     .catch((err) => {
       return res.status(500).send({'message': 'Сервер не отвечает'})
