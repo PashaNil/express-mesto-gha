@@ -46,7 +46,7 @@ const createUser = (req, res) => {
 const updateProfile = (req, res) => {
   const { name, about } = req.body;
   if (name || about) {
-    return UserModel.findByIdAndUpdate(req.user._id, { name, about }, { returnDocument: 'after' })
+    return UserModel.findByIdAndUpdate(req.user._id, { name, about }, { returnDocument: 'after', runValidators: true})
       .then((user) => {
         if (!user) {
           return res.status(404).send({'message': `Пользователь с указанным ${req.user._id} не найден`})
@@ -54,6 +54,9 @@ const updateProfile = (req, res) => {
         return res.status(200).send(user)
       })
       .catch((err) => {
+        if(err.name === "ValidationError"){
+          return res.status(400).send({'message': `Переданы некорректные данные при обновлении профиля`})
+        }
         return res.status(500).send({'message': 'Сервер не отвечает'})
       })
   }
@@ -65,7 +68,7 @@ const updateAvatar = (req, res) => {
   if (!avatar) {
     return res.status(400).send({'message': `Переданы некорректные данные при обновлении аватара`})
   }
-  return UserModel.findByIdAndUpdate(req.user._id, { avatar }, { returnDocument: 'after' })
+  return UserModel.findByIdAndUpdate(req.user._id, { avatar }, { returnDocument: 'after', runValidators: true })
     .then((user) => {
       if (user) {
         return res.status(200).send(user)
@@ -73,6 +76,9 @@ const updateAvatar = (req, res) => {
       return res.status(404).send({'message': `Пользователь с указанным ${req.user._id} не найден`})
     })
     .catch((err) => {
+      if(err.name === "ValidationError"){
+        return res.status(400).send({'message': `Переданы некорректные данные при обновлении аватара`})
+      }
       return res.status(500).send({'message': 'Сервер не отвечает'})
     })
 }
