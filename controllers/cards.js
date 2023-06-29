@@ -33,7 +33,7 @@ const deleteCardById = (req, res) => {
       if (!card) {
         return res.status(404).send({'message': `Карточка с указанным ${cardId} не найден`});
       }
-      return res.status(200).send(`Карточка ${card} удалена`)
+      return res.status(200).send(card)
     })
     .catch((err) => {
       if (err.kind === "ObjectId") {
