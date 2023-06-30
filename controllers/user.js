@@ -10,16 +10,16 @@ const getUsers = (req, res) => (
 
 const getUserById = (req, res) => {
   const { userId } = req.params;
-  return UserModel.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: `Пользователь по указанному ${userId} не найден` });
-      }
-      return res.status(200).send(user);
-    })
+  return UserModel.findById(userId).orFail()
+    .then((user) => (
+      res.status(200).send(user)
+    ))
     .catch((err) => {
-      if (err.kind === 'ObjectId') {
+      if (err.kind === 'CastError') {
         return res.status(400).send({ message: `Переданы некорректные данные: ${userId}` });
+      }
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(404).send({ message: `Пользователь по указанному ${userId} не найден` });
       }
       return res.status(500).send({ message: 'Сервер не отвечает' });
     });
@@ -30,7 +30,7 @@ const createUser = (req, res) => {
 
   return UserModel.create(newUser)
     .then((user) => (
-      res.status(200).send(user)
+      res.status(201).send(user)
     ))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -43,16 +43,16 @@ const createUser = (req, res) => {
 const updateProfile = (req, res) => {
   const { name, about } = req.body;
   if (name || about) {
-    return UserModel.findByIdAndUpdate(req.user._id, { name, about }, { returnDocument: 'after', runValidators: true })
-      .then((user) => {
-        if (!user) {
-          return res.status(404).send({ message: `Пользователь с указанным ${req.user._id} не найден` });
-        }
-        return res.status(200).send(user);
-      })
+    return UserModel.findByIdAndUpdate(req.user._id, { name, about }, { returnDocument: 'after', runValidators: true }).orFail()
+      .then((user) => (
+        res.status(200).send(user)
+      ))
       .catch((err) => {
         if (err.name === 'ValidationError') {
           return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+        }
+        if (err.name === 'DocumentNotFoundError') {
+          return res.status(404).send({ message: `Пользователь с указанным ${req.user._id} не найден` });
         }
         return res.status(500).send({ message: 'Сервер не отвечает' });
       });

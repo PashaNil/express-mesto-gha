@@ -5,7 +5,7 @@ const getCards = (req, res) => (
     .then((cards) => (
       res.status(200).send(cards)
     ))
-    .catch((err) => (
+    .catch(() => (
       res.status(500).send({ message: 'Сервер не отвечает' })
     ))
 );
@@ -15,7 +15,7 @@ const createCard = (req, res) => {
 
   return CardModel.create(newCard)
     .then((card) => (
-      res.status(200).send(card)
+      res.status(201).send(card)
     ))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -28,14 +28,14 @@ const createCard = (req, res) => {
 const deleteCardById = (req, res) => {
   const { cardId } = req.params;
 
-  return CardModel.findByIdAndDelete(cardId)
-    .then((card) => {
-      if (!card) {
+  return CardModel.findByIdAndDelete(cardId).orFail()
+    .then((card) => (
+      res.status(200).send(card)
+    ))
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
         return res.status(404).send({ message: `Карточка с указанным ${cardId} не найден` });
       }
-      return res.status(200).send(card);
-    })
-    .catch((err) => {
       if (err.kind === 'ObjectId') {
         return res.status(400).send({ message: `Некорректный ${cardId}` });
       }
@@ -46,14 +46,14 @@ const deleteCardById = (req, res) => {
 const setLikeByCardId = (req, res) => {
   const { cardId } = req.params;
 
-  return CardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { returnDocument: 'after' })
-    .then((card) => {
-      if (!card) {
+  return CardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { returnDocument: 'after' }).orFail()
+    .then((card) => (
+      res.status(200).send(card)
+    ))
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
         return res.status(404).send({ message: `Передан несуществующий ${cardId} карточки` });
       }
-      return res.status(200).send(card);
-    })
-    .catch((err) => {
       if (err.kind === 'ObjectId') {
         return res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       }
@@ -64,14 +64,14 @@ const setLikeByCardId = (req, res) => {
 const removeLikeByCardId = (req, res) => {
   const { cardId } = req.params;
 
-  return CardModel.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { returnDocument: 'after' })
-    .then((card) => {
-      if (!card) {
+  return CardModel.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { returnDocument: 'after' }).orFail()
+    .then((card) => (
+      res.status(200).send(card)
+    ))
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
         return res.status(404).send({ message: `Передан несуществующий ${cardId} карточки` });
       }
-      return res.status(200).send(card);
-    })
-    .catch((err) => {
       if (err.kind === 'ObjectId') {
         return res.status(400).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       }
