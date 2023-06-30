@@ -15,7 +15,7 @@ const getUserById = (req, res) => {
       res.status(200).send(user)
     ))
     .catch((err) => {
-      if (err.kind === 'CastError') {
+      if (err.name === 'CastError') {
         return res.status(400).send({ message: `Переданы некорректные данные: ${userId}` });
       }
       if (err.name === 'DocumentNotFoundError') {
