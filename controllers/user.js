@@ -57,14 +57,14 @@ const getUsers = (req, res, next) => (
 
 // Получение пользователя по id
 const getUserById = (req, res, next) => {
-  const { id } = req.params;
-  return UserModel.findById(id).orFail()
+  const { userid } = req.params;
+  return UserModel.findById(userid).orFail()
     .then((user) => (
       res.status(200).send(user)
     ))
     .catch((err) => {
       if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные, должен быть id'));
-      if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Пользователь по указанному _id не найден'));
+      if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Пользователь по указанному id не найден'));
       return next(err);
     });
 };

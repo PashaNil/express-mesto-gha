@@ -12,7 +12,8 @@
       "no-underscore-dangle": ["error",{"allow": ["_id"]}],
       "no-console": "off",
       "object-curly-newline": ["error", { "consistent": true }],
-      "import/no-extraneous-dependencies": "off"
+      "import/no-extraneous-dependencies": "off",
+      "prefer-regex-literals": "error",
     }
 }
 

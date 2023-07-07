@@ -1,8 +1,8 @@
 # **Проектная работа Яндекс Практикум**
 ## *Выполнил студент Павел Данилов*
 
-[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml)
-## **Mesto** 13 проектная работа
+[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
+## **Mesto** 14 проектная работа
 
 
 ### Проектная работа по backend части, где использовались изученные технологии:
@@ -12,6 +12,10 @@
 4. midlewares
 5. Защита
 6. mongodb
+7. Защита авторизацией
+8. Получение хеша
+9. Получение токена
+10. Куки
 
 ### В планах доработки проекта после изучения новых тем:
 1. Завершение backend части для проекта mesto
