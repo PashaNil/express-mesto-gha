@@ -1,7 +1,5 @@
 const express = require('express');
 
-const bodyParser = require('body-parser');
-
 const mongoose = require('mongoose');
 
 const helmet = require('helmet');
@@ -32,7 +30,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
     console.log(`Ошибка подключения mongodb: ${err}`);
   });
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(helmet());
 
 // Все роуты
