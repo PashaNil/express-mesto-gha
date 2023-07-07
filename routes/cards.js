@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
+const { regularUrl } = require('../utils/regularExpressions');
 const {
   getCards, createCard, deleteCardById, setLikeByCardId, removeLikeByCardId,
 } = require('../controllers/cards');
@@ -12,7 +13,7 @@ router.get('', getCards);
 router.post('', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.required(),
+    link: Joi.string().required().pattern(regularUrl),
   }),
 }), createCard);
 

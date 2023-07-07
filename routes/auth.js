@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { login, createUser } = require('../controllers/user');
-const { regularUrl } = require('../utils/regularExpressions')
+const { regularUrl } = require('../utils/regularExpressions');
 
 // Авторизация
 router.post('/signin', celebrate({

@@ -57,8 +57,8 @@ const getUsers = (req, res, next) => (
 
 // Получение пользователя по id
 const getUserById = (req, res, next) => {
-  const { userid } = req.params;
-  return UserModel.findById(userid).orFail()
+  const { userId: id } = req.params;
+  return UserModel.findById(id).orFail()
     .then((user) => (
       res.status(200).send(user)
     ))
