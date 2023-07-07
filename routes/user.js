@@ -12,7 +12,7 @@ router.get('', getUsers);
 router.get('/me', getUserInfo);
 
 // Получение пользователя по id
-router.get('/id/:userId', celebrate({
+router.get('/:userId', celebrate({
   params: Joi.object().keys({
     userId: Joi.string().length(24).alphanum().required(),
   }),

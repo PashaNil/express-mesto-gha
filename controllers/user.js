@@ -27,7 +27,7 @@ const login = (req, res, next) => {
       })
     ))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Такого пользователя не существует'));
+      if (err.name === 'DocumentNotFoundError') return next(new UnauthorizedError('Такого пользователя не существует'));
       return next(err);
     });
 };
@@ -81,8 +81,8 @@ const createUser = (req, res, next) => {
 
       return bcrypt.hash(password, SALT_ROUNDS, (error, hash) => (
         UserModel.create({ name, about, avatar, email, password: hash })
-          .then((newUser) => (
-            res.status(201).send(newUser)
+          .then(() => (
+            res.status(201).send({ name, about, avatar, email })
           ))
           .catch((err) => {
             if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
