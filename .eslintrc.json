@@ -1,6 +1,5 @@
 {
     "env": {
-        "commonjs": true,
         "es2021": true,
         "node": true
     },
@@ -9,11 +8,7 @@
         "ecmaVersion": "latest"
     },
     "rules": {
-      "no-underscore-dangle": ["error",{"allow": ["_id"]}],
-      "no-console": "off",
-      "object-curly-newline": ["error", { "consistent": true }],
-      "import/no-extraneous-dependencies": "off",
-      "prefer-regex-literals": "error",
+      "no-underscore-dangle": ["error",{"allow": ["_id"]}]
     }
 }
 

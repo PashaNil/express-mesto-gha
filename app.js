@@ -1,9 +1,15 @@
 const express = require('express');
+
 const bodyParser = require('body-parser');
+
 const mongoose = require('mongoose');
+
 const helmet = require('helmet');
+
 const { errors } = require('celebrate');
+
 const routes = require('./routes/index');
+
 const errorHandler = require('./middlewares/error-handler');
 
 const { PORT = 3000 } = process.env;

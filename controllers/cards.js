@@ -33,11 +33,11 @@ const deleteCardById = (req, res, next) => {
   return CardModel.findById(cardId).orFail()
     .then((card) => {
       if (card.owner.valueOf() !== id) throw new ForbiddenError('Вы не владелец этой карточки');
-      return CardModel.findByIdAndDelete(cardId).then(() => res.send(card));
+      return card.deleteOne().then(() => res.send(card));
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Карточка с указанным id не найдена'));
-      if (err.kind === 'ObjectId') return next(new BadRequestError('Передан некорректный id'));
+      if (err.name === 'CastError') return next(new BadRequestError('Передан некорректный id'));
       return next(err);
     });
 };
@@ -51,7 +51,7 @@ const setLikeByCardId = (req, res, next) => {
     ))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Карточка с указанным id не найдена'));
-      if (err.kind === 'ObjectId') return next(new BadRequestError('Переданы некорректные данные для постановки лайка'));
+      if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные для постановки лайка'));
       return next(err);
     });
 };
@@ -65,7 +65,7 @@ const removeLikeByCardId = (req, res, next) => {
     ))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Карточка с указанным id не найдена'));
-      if (err.kind === 'ObjectId') return next(new BadRequestError('Переданы некорректные данные для снятия лайка'));
+      if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные для снятия лайка'));
       return next(err);
     });
 };
