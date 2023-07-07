@@ -1,7 +1,7 @@
 # **Проектная работа Яндекс Практикум**
 ## *Выполнил студент Павел Данилов*
 
-[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
+[![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
 ## **Mesto** 14 проектная работа
 
 
