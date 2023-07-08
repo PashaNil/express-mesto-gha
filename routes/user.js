@@ -1,7 +1,9 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
 
-const { regularUrl } = require('../utils/regularExpressions');
+const {
+  reqRulesGetUserById, reqRulesUpdateProfile, reqRulesUpdateAvatar,
+} = require('../utils/requestValidationRules');
+
 const {
   getUsers, getUserById, updateProfile, updateAvatar, getUserInfo,
 } = require('../controllers/user');
@@ -13,25 +15,12 @@ router.get('', getUsers);
 router.get('/me', getUserInfo);
 
 // Получение пользователя по id
-router.get('/:userId', celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().length(24).hex().required(),
-  }),
-}), getUserById);
+router.get('/:userId', reqRulesGetUserById, getUserById);
 
 // Обновление профиля
-router.patch('/me', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).required(),
-    about: Joi.string().min(2).max(30).required(),
-  }),
-}), updateProfile);
+router.patch('/me', reqRulesUpdateProfile, updateProfile);
 
 // Обновление аватара
-router.patch('/me/avatar', celebrate({
-  body: Joi.object().keys({
-    avatar: Joi.string().required().pattern(regularUrl),
-  }),
-}), updateAvatar);
+router.patch('/me/avatar', reqRulesUpdateAvatar, updateAvatar);
 
 module.exports = router;

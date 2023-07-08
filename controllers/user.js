@@ -1,15 +1,13 @@
 const bcrypt = require('bcrypt');
 
 const UserModel = require('../models/user');
+const { SALT_ROUNDS } = require('../config');
 const { generateToken } = require('../utils/jwt');
 
 const BadRequestError = require('../errors/BadRequestError'); // 400
 const UnauthorizedError = require('../errors/UnauthorizedError'); // 401
-const ForbiddenError = require('../errors/ForbiddenError'); // 403
 const NotFoundError = require('../errors/NotFoundError'); // 404
 const ConflictError = require('../errors/ConflictError'); // 409
-
-const SALT_ROUNDS = 10;
 
 // Авторизация с проверкой данных и отдачей токена
 const login = (req, res, next) => {
@@ -19,12 +17,13 @@ const login = (req, res, next) => {
   return UserModel.findOne({ email }).select('+password').orFail()
     .then((user) => (
       // Получение пароля из хеша
-      bcrypt.compare(password, user.password, (err, isPasswordMatch) => {
-        if (!isPasswordMatch) return next(new ForbiddenError('Ошибка авторизации'));
-        // Cоздание и отдача токена
-        const token = generateToken(user._id);
-        return res.status(200).send({ token });
-      })
+      bcrypt.compare(password, user.password)
+        .then((isPasswordMatch) => {
+          if (!isPasswordMatch) throw new UnauthorizedError('Неправильный password');
+          // Cоздание и отдача токена
+          const token = generateToken(user._id);
+          return res.status(200).send({ token });
+        })
     ))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') return next(new UnauthorizedError('Такого пользователя не существует'));
@@ -35,7 +34,8 @@ const login = (req, res, next) => {
 // Получение информции о пользователе
 const getUserInfo = (req, res, next) => {
   const { id } = req.user;
-  UserModel.findById(id).orFail()
+
+  return UserModel.findById(id).orFail()
     .then((user) => (
       res.status(200).send(user)
     ))
@@ -57,6 +57,7 @@ const getUsers = (req, res, next) => (
 // Получение пользователя по id
 const getUserById = (req, res, next) => {
   const { userId: id } = req.params;
+
   return UserModel.findById(id).orFail()
     .then((user) => (
       res.status(200).send(user)
@@ -75,10 +76,8 @@ const createUser = (req, res, next) => {
   } = req.body;
 
   return UserModel.findOne({ email })
-    .then((user) => {
-      if (user) throw new ConflictError('Такой пользователь уже существует');
-
-      return bcrypt.hash(password, SALT_ROUNDS, (error, hash) => (
+    .then(() => (
+      bcrypt.hash(password, SALT_ROUNDS, (error, hash) => (
         UserModel.create({
           name, about, avatar, email, password: hash,
         })
@@ -88,11 +87,12 @@ const createUser = (req, res, next) => {
             })
           ))
           .catch((err) => {
+            if (err.code === 11000) return next(new ConflictError('Такой пользователь уже существует'));
             if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
             return next(err);
           })
-      ));
-    })
+      ))
+    ))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       return next(err);

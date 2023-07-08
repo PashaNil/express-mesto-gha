@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const UnauthorizedError = require('../errors/UnauthorizedError'); // 401
-
-const JWT_SECRET = 'unique-secret-key';
+const { JWT_SECRET } = require('../config');
 
 module.exports = (req, res, next) => {
   // Там токен

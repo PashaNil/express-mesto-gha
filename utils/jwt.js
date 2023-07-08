@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = 'unique-secret-key';
+const { JWT_SECRET } = require('../config');
 
 // Функция создания токена
 const generateToken = (id) => (

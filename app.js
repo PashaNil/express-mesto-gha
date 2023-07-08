@@ -8,9 +8,9 @@ const { errors } = require('celebrate');
 
 const routes = require('./routes/index');
 
-const errorHandler = require('./middlewares/error-handler');
+const { PORT } = require('./config');
 
-const { PORT = 3000 } = process.env;
+const errorHandler = require('./middlewares/error-handler');
 
 const app = express();
 
