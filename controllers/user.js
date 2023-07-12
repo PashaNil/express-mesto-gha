@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { mongoose } = require('mongoose');
 
 const UserModel = require('../models/user');
 const { SALT_ROUNDS } = require('../config');
@@ -26,7 +27,7 @@ const login = (req, res, next) => {
         })
     ))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') return next(new UnauthorizedError('Такого пользователя не существует'));
+      if (err instanceof mongoose.Error.DocumentNotFoundError) return next(new UnauthorizedError('Такого пользователя не существует'));
       return next(err);
     });
 };
@@ -40,7 +41,7 @@ const getUserInfo = (req, res, next) => {
       res.status(200).send(user)
     ))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Пользователь по указанному id не найден'));
+      if (err instanceof mongoose.Error.DocumentNotFoundError) return next(new NotFoundError('Пользователь по указанному id не найден'));
       return next(err);
     });
 };
@@ -57,14 +58,13 @@ const getUsers = (req, res, next) => (
 // Получение пользователя по id
 const getUserById = (req, res, next) => {
   const { userId: id } = req.params;
-
   return UserModel.findById(id).orFail()
     .then((user) => (
       res.status(200).send(user)
     ))
     .catch((err) => {
-      if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные, должен быть id'));
-      if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Пользователь по указанному id не найден'));
+      if (err instanceof mongoose.Error.CastError) return next(new BadRequestError('Переданы некорректные данные, должен быть id'));
+      if (err instanceof mongoose.Error.DocumentNotFoundError) return next(new NotFoundError('Пользователь по указанному id не найден'));
       return next(err);
     });
 };
@@ -94,7 +94,7 @@ const createUser = (req, res, next) => {
       ))
     ))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+      if (err instanceof mongoose.Error.DocumentNotFoundError) return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       return next(err);
     });
 };
@@ -110,7 +110,7 @@ const updateProfile = (req, res, next) => {
     ))
     .catch((err) => {
       if (err.name === 'ValidationError') return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
-      if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Пользователь с указанным _id не найден'));
+      if (err instanceof mongoose.Error.DocumentNotFoundError) return next(new NotFoundError('Пользователь с указанным _id не найден'));
       return next(err);
     });
 };
@@ -125,7 +125,7 @@ const updateAvatar = (req, res, next) => {
       res.status(200).send(user)
     ))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') return next(new NotFoundError('Пользователь с указанным id не найден'));
+      if (err instanceof mongoose.Error.DocumentNotFoundError) return next(new NotFoundError('Пользователь с указанным id не найден'));
       if (err.name === 'ValidationError') return next(new BadRequestError(err.message));
       return next(err);
     });
