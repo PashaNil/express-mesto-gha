@@ -10,6 +10,8 @@ const routes = require('./routes/index');
 
 const { PORT } = require('./config');
 
+const cors = require('./middlewares/cors');
+
 const errorHandler = require('./middlewares/error-handler');
 
 const app = express();
@@ -32,6 +34,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 
 app.use(express.json());
 app.use(helmet());
+app.use(cors);
 
 // Все роуты
 app.use(routes);
